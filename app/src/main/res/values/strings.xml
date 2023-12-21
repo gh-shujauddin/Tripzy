@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Tripzy</string>
+    <string name="tripzy">Tripzy</string>
+    <string name="search">Search</string>
+    <string name="plan">Plan</string>
+    <string name="account">Account</string>
+</resources>
