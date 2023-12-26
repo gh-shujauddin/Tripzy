@@ -11,30 +11,35 @@ import com.qadri.tripzy.R
 // Set of Material typography styles to start with
 val poppinsBlack = FontFamily(
     Font(R.font.poppins_black, FontWeight.Black),
-    Font(R.font.poppins_bold, FontWeight.ExtraBold),
-    Font(R.font.poppins_regular),
+    Font(R.font.poppins_semibold, FontWeight.Bold),
+    Font(R.font.poppins_regular, FontWeight.Normal),
     Font(R.font.poppins_light, FontWeight.Light),
-    Font(R.font.poppins_regular, FontWeight.Normal)
+    Font(R.font.poppins_medium, FontWeight.Medium)
 )
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = poppinsBlack,
         fontWeight = FontWeight.Normal,
         fontSize = 20.sp,
-//        lineHeight = 24.sp,
+        lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = poppinsBlack,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
         letterSpacing = 0.5.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = poppinsBlack,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
     ),
 
     titleLarge = TextStyle(
         fontFamily = poppinsBlack,
-        fontWeight = FontWeight.ExtraBold,
+        fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
@@ -46,10 +51,32 @@ val Typography = Typography(
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
+    titleSmall = TextStyle(
+        fontFamily = poppinsBlack,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+    ),
     displayLarge = TextStyle(
         fontFamily = poppinsBlack,
         fontWeight = FontWeight.Bold,
         fontSize = 26.sp
+    ),
+    displayMedium = TextStyle(
+        fontFamily = poppinsBlack,
+        fontWeight = FontWeight.Medium,
+        fontSize = 22.sp
+    ),
+    displaySmall = TextStyle(
+        fontFamily = poppinsBlack,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = poppinsBlack,
+        fontWeight = FontWeight.Medium,
+        fontSize = 13.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
     ),
     labelSmall = TextStyle(
         fontFamily = poppinsBlack,

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -26,10 +25,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowRightAlt
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.sharp.Mic
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -64,15 +60,16 @@ import com.qadri.tripzy.constants.SliderList
 import com.qadri.tripzy.constants.bottomNavigationItems
 import com.qadri.tripzy.constants.categoryList
 import com.qadri.tripzy.constants.placesList
-import com.qadri.tripzy.data.BottomNavigationScreens
+import com.qadri.tripzy.presentation.navigation.BottomNavigationScreens
 import com.qadri.tripzy.presentation.navigation.NavigationDestination
 import com.qadri.tripzy.presentation.navigation.TripzyBottomNavigation
+import com.qadri.tripzy.utils.CardsRow
 import com.qadri.tripzy.utils.NonlazyGrid
 import kotlin.math.absoluteValue
 
 object HomeDestination : NavigationDestination {
     override val route: String = "home"
-    override val titleRes: Int = R.string.app_name
+    override val titleRes: Int = R.string.home
 }
 
 @Composable
@@ -122,11 +119,10 @@ fun HomeScreen(
                         isCategoryClicked = true
                     }
                 )
-                Spacer(modifier = Modifier.height(24.dp))
+//                Spacer(modifier = Modifier.height(24.dp))
 
                 AnimatedVisibility(visible = isCategoryClicked) {
-                    ShowCategory()
-
+                    CardsRow()
                 }
                 Spacer(modifier = Modifier.height(34.dp))
             }
@@ -161,91 +157,14 @@ fun SearchBarMock(
         }
         Spacer(modifier = Modifier.weight(1f))
 
-        Box(modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.Center) {
-            Icon(
-                Icons.Sharp.Mic,
-                contentDescription = "search",
-                modifier = Modifier.padding(end = 8.dp)
-            )
-        }
     }
 }
 
 @Composable
 fun Header() {
     Column(verticalArrangement = Arrangement.Center, modifier = Modifier.padding(start = 6.dp)) {
-        Text(text = "Discover", style = MaterialTheme.typography.displayLarge)
+        Text(text = "Discover", style = MaterialTheme.typography.titleLarge)
         Text(text = "The beauty today", style = MaterialTheme.typography.bodyLarge)
-    }
-}
-
-@Composable
-fun ShowCategory() {
-    val categories = placesList
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(categories) { item ->
-            Card(
-                modifier = Modifier
-                    .width(250.dp)
-                    .padding(horizontal = 4.dp),
-                shape = MaterialTheme.shapes.medium,
-                elevation = CardDefaults.elevatedCardElevation(4.dp),
-                colors = CardDefaults.cardColors(Color.White)
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Box(
-                        Modifier
-                            .padding(8.dp)
-                            .clip(MaterialTheme.shapes.medium)
-                            .height(150.dp)
-                    ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(item.link)
-                                .crossfade(true)
-                                .scale(Scale.FILL)
-                                .build(),
-                            contentDescription = null,
-                            placeholder = painterResource(id = R.drawable.lake),
-                            error = painterResource(id = R.drawable.ic_error_image_generic),
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.FillWidth
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column {
-                            Text(text = item.title, style = MaterialTheme.typography.titleMedium)
-                            Row(modifier = Modifier) {
-                                Icon(
-                                    imageVector = Icons.Filled.LocationOn,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(top = 4.dp, end = 4.dp)
-                                        .size(20.dp)
-                                )
-                                Text(text = item.place, style = MaterialTheme.typography.bodyMedium)
-                            }
-                        }
-                        Box {
-                            Icon(
-                                imageVector = if (item.isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                                contentDescription = "Bookmark",
-                                modifier = Modifier.padding(4.dp)
-                            )
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 

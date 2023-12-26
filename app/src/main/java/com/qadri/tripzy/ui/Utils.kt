@@ -1,5 +1,3 @@
 package com.qadri.tripzy.ui
 
-enum class TripzyNavigationType {
-    BOTTOM_NAVIGATION, NAVIGATION_RAIL, PERMANENT_NAVIGATION_DRAWER
-}
+const val BASE_URL = "https://travel-advisor.p.rapidapi.com/"

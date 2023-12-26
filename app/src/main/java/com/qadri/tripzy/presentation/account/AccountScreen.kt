@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.qadri.tripzy.R
 import com.qadri.tripzy.constants.bottomNavigationItems
-import com.qadri.tripzy.data.BottomNavigationScreens
+import com.qadri.tripzy.presentation.navigation.BottomNavigationScreens
 import com.qadri.tripzy.presentation.navigation.NavigationDestination
 import com.qadri.tripzy.presentation.navigation.TripzyBottomNavigation
 

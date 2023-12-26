@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -13,7 +12,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.qadri.tripzy.constants.bottomNavigationItems
-import com.qadri.tripzy.data.BottomNavigationScreens
 import com.qadri.tripzy.presentation.search.SearchDestination
 import com.qadri.tripzy.presentation.search.SearchScreen
 import com.qadri.tripzy.presentation.account.AccountDestination
@@ -25,8 +23,7 @@ import com.qadri.tripzy.presentation.plan.PlanScreen
 
 @Composable
 fun TripzyNavHost(
-    navController: NavHostController,
-    bottomNavChange: (Int) -> Unit
+    navController: NavHostController
 ) {
 
     var nav by remember {
@@ -37,7 +34,8 @@ fun TripzyNavHost(
             HomeScreen(
                 navController = navController,
                 onSearchClick = {
-                    navController.navigate("${SearchDestination.route}/$it") {
+                    val f = true
+                    navController.navigate("${SearchDestination.route}/$f") {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }

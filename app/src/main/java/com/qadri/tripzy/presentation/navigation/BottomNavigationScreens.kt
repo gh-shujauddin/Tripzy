@@ -1,4 +1,4 @@
-package com.qadri.tripzy.data
+package com.qadri.tripzy.presentation.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
