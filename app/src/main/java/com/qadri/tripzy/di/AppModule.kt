@@ -41,7 +41,7 @@ object AppModule {
             }
             install(DefaultRequest) {
                 url(BASE_URL)
-                header("X-RapidAPI-Key", "a24fb067f8msh89b432e6ed58a64p1d18a4jsnf34dde548cd8")
+                header("X-RapidAPI-Key", "{Your Rapid Api Key}")
                 header("X-RapidAPI-Host", "travel-advisor.p.rapidapi.com")
             }
             install(ContentNegotiation) {
