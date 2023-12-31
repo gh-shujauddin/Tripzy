@@ -2,10 +2,11 @@ package com.qadri.tripzy.di
 
 import android.content.Context
 import androidx.room.Room
+import com.google.firebase.auth.FirebaseAuth
 import com.qadri.tripzy.data.TripzyDao
 import com.qadri.tripzy.data.TripzyDatabase
-import com.qadri.tripzy.network.TripzyRepository
-import com.qadri.tripzy.network.TripzyRepositoryImpl
+import com.qadri.tripzy.data.TripzyRepository
+import com.qadri.tripzy.data.TripzyRepositoryImpl
 import com.qadri.tripzy.ui.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -29,6 +30,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+
+    @Provides
+    @Singleton
+    fun providesFirebaseAuth() = FirebaseAuth.getInstance()
+
 
     @OptIn(ExperimentalSerializationApi::class)
     @Singleton
@@ -63,8 +70,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideApiService(httpClient: HttpClient, dao: TripzyDao): TripzyRepository =
-        TripzyRepositoryImpl(httpClient, dao)
+    fun provideApiService(httpClient: HttpClient, dao: TripzyDao, firebaseAuth: FirebaseAuth): TripzyRepository =
+        TripzyRepositoryImpl(httpClient, dao, firebaseAuth)
 
 
     @Provides

@@ -1,5 +1,6 @@
 package com.qadri.tripzy.presentation.navigation
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,8 +49,8 @@ fun TripzyBottomNavigation(
             .background(Color.White, RoundedCornerShape(8.dp)),
     ) {
 
-        var selectedIndex by remember {
-            mutableStateOf(defaultSelectedIndex)
+        val selectedIndex by remember {
+            mutableIntStateOf(defaultSelectedIndex)
         }
 
         Row(
@@ -56,7 +58,7 @@ fun TripzyBottomNavigation(
             modifier = Modifier
                 .fillMaxSize(),
         ) {
-
+            Log.d("LIST", "${list.size}")
             list.forEachIndexed { index, nav ->
                 Box(
                     Modifier

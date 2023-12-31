@@ -5,6 +5,7 @@ plugins {
     id ("dagger.hilt.android.plugin")
     id ("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.devtools.ksp")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -66,12 +67,14 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended:1.5.3")
     implementation("androidx.navigation:navigation-compose:2.6.0")
-
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
     //Coil
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     //Dagger - Hilt
     implementation("com.google.dagger:hilt-android:2.47")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
     ksp ("com.google.dagger:hilt-compiler:2.47")
     implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
 
@@ -89,6 +92,10 @@ dependencies {
     implementation ("androidx.room:room-runtime:2.6.1")
     ksp ("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.1")
+
+    //Firebase
+    implementation("com.google.firebase:firebase-auth:22.3.0")
+    implementation("com.google.firebase:firebase-storage:20.3.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

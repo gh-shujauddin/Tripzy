@@ -1,6 +1,7 @@
 package com.qadri.tripzy.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -16,4 +17,7 @@ interface TripzyDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addRecentSearch(recent: Recents)
+
+    @Delete
+    suspend fun deleteRecentSearch(recent: Recents)
 }

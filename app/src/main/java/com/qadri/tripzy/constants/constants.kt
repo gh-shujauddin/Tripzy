@@ -7,8 +7,11 @@ val bottomNavigationItems = listOf(
     BottomNavigationScreens.Explore,
     BottomNavigationScreens.Search,
     BottomNavigationScreens.Plan,
-    BottomNavigationScreens.Account
+    BottomNavigationScreens.Account,
+    BottomNavigationScreens.Text
 )
+
+const val ServerClient = "1084632966642-m2b3ffmams9im7jtkrsk2ktp6gkjkcgt.apps.googleusercontent.com"
 
 data class Category(
     val imgResId: Int,

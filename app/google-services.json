@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1084632966642",
+    "project_id": "tripzy-b6854",
+    "storage_bucket": "tripzy-b6854.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084632966642:android:2101aed037401ecd40b76b",
+        "android_client_info": {
+          "package_name": "com.qadri.tripzy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1084632966642-fvivk7s9e9lmsp0fplcasjsv1lfki2qo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.qadri.tripzy",
+            "certificate_hash": "50142d843a625db3db251955a702b560ad8b2392"
+          }
+        },
+        {
+          "client_id": "1084632966642-m2b3ffmams9im7jtkrsk2ktp6gkjkcgt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtksQloH-ji25M05WdRm91Mj2IyBhmh90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1084632966642-m2b3ffmams9im7jtkrsk2ktp6gkjkcgt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
