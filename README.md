@@ -19,7 +19,7 @@ Home | Search | Place Detail | Top trips
   - [Flow](https://kotlinlang.org/docs/reference/coroutines/flow.html) - A flow is an asynchronous version of a Sequence, a type of collection whose values are lazily produced.
   - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores UI-related data that isn't destroyed on UI changes. 
 - [Material Components for Android](https://github.com/material-components/material-components-android) - Modular and customizable Material Design UI components for Android.
-- 
+- [Ktor Client](https://ktor.io/docs/getting-started-ktor-client.html) - For effecient request and response from the Api's
 <!-- - [Figma](https://figma.com/) - Figma is a vector graphics editor and prototyping tool which is primarily web-based. -->
 
 <br />
