@@ -8,10 +8,10 @@ val bottomNavigationItems = listOf(
     BottomNavigationScreens.Search,
     BottomNavigationScreens.Plan,
     BottomNavigationScreens.Account,
-    BottomNavigationScreens.Text
+//    BottomNavigationScreens.Text
 )
 
-const val ServerClient = "1084632966642-m2b3ffmams9im7jtkrsk2ktp6gkjkcgt.apps.googleusercontent.com"
+const val ServerClient = "636335565928-hh2l7j48d63bu7k4ic1sb52g7e9oqf3u.apps.googleusercontent.com"
 
 data class Category(
     val imgResId: Int,
@@ -118,34 +118,22 @@ data class City(
 )
 
 
-val places = listOf(
-    Place(
-        name = "Taj Mahal",
-        link = listOf(
-            "https://www.jetsetter.com/uploads/sites/7/2018/04/y7lEy9T7-1380x1035.jpeg",
-            "https://1.bp.blogspot.com/-3mUa4Z5ria0/ToRV3GwN0GI/AAAAAAAAAQ8/kA71S1kIesE/s1600/Taj+Mahal.jpg"
-        ),
-        locationName = "Agra",
-        description = "The Taj Mahal is located in Agra, India. Agra is a small city in North India a few hours drive or 200 kilometers (125 miles) from the capital of New Delhi. Agra is often visited on the Golden Triangle travel route which includes the most popular stops in India: Delhi, Agra, and Jaipur. \n" +
-                "\n" +
-                "Agra was a very important city during the Mughal rule of North India, but since then has a decrease in political importance and today only has 1.7 million people. The Taj Mahal is located to the east of the city near the banks of the holy Yamuna River. ",
-        rating = 4.0,
-        totalReviews = 445,
-        budgetPerDay = 2000,
-        tags = listOf("Culture", "Historical"),
-        averageTemperature = 20.5
-    )
-)
+//val places = listOf(
+//    Place(
+//        name = "Taj Mahal",
+//        link = listOf(
+//            "https://www.jetsetter.com/uploads/sites/7/2018/04/y7lEy9T7-1380x1035.jpeg",
+//            "https://1.bp.blogspot.com/-3mUa4Z5ria0/ToRV3GwN0GI/AAAAAAAAAQ8/kA71S1kIesE/s1600/Taj+Mahal.jpg"
+//        ),
+//        locationName = "Agra",
+//        description = "The Taj Mahal is located in Agra, India. Agra is a small city in North India a few hours drive or 200 kilometers (125 miles) from the capital of New Delhi. Agra is often visited on the Golden Triangle travel route which includes the most popular stops in India: Delhi, Agra, and Jaipur. \n" +
+//                "\n" +
+//                "Agra was a very important city during the Mughal rule of North India, but since then has a decrease in political importance and today only has 1.7 million people. The Taj Mahal is located to the east of the city near the banks of the holy Yamuna River. ",
+//        rating = 4.0,
+//        totalReviews = 445,
+//        budgetPerDay = 2000,
+//        tags = listOf("Culture", "Historical"),
+//        averageTemperature = 20.5
+//    )
+//)
 
-data class Place(
-    val name: String,
-    val link: List<String>,
-    val locationName: String,
-    val description: String,
-    val rating: Double,
-    val totalReviews: Int = 0,
-    val budgetPerDay: Int = 0,
-    val tags: List<String> = listOf(),
-    val averageTemperature: Double = 0.0,
-    val distance: Double = 0.0
-)

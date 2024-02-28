@@ -1,20 +1,21 @@
 {
   "project_info": {
-    "project_number": "1084632966642",
-    "project_id": "tripzy-b6854",
-    "storage_bucket": "tripzy-b6854.appspot.com"
+    "project_number": "636335565928",
+    "firebase_url": "https://tripzy-94b63-default-rtdb.firebaseio.com",
+    "project_id": "tripzy-94b63",
+    "storage_bucket": "tripzy-94b63.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1084632966642:android:2101aed037401ecd40b76b",
+        "mobilesdk_app_id": "1:636335565928:android:15f7043e5d59d51979dfdd",
         "android_client_info": {
           "package_name": "com.qadri.tripzy"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1084632966642-fvivk7s9e9lmsp0fplcasjsv1lfki2qo.apps.googleusercontent.com",
+          "client_id": "636335565928-ivv3fiokcuem1rbhubh7psiakh3n0cdb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.qadri.tripzy",
@@ -22,20 +23,20 @@
           }
         },
         {
-          "client_id": "1084632966642-m2b3ffmams9im7jtkrsk2ktp6gkjkcgt.apps.googleusercontent.com",
+          "client_id": "636335565928-hh2l7j48d63bu7k4ic1sb52g7e9oqf3u.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAtksQloH-ji25M05WdRm91Mj2IyBhmh90"
+          "current_key": "AIzaSyBuynRIuIcu3-0amwvN9XKeAxj2ftfDxWY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1084632966642-m2b3ffmams9im7jtkrsk2ktp6gkjkcgt.apps.googleusercontent.com",
+              "client_id": "636335565928-hh2l7j48d63bu7k4ic1sb52g7e9oqf3u.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

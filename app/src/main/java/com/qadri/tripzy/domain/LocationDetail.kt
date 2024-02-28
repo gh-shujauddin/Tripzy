@@ -29,7 +29,14 @@ data class Result(
 data class DetailsV2(
     val locationId: Int,
     val names: Names,
-    val placeType: String
+    val placeType: String,
+    val geocode: GeoCode? = null
+)
+
+@Serializable
+data class GeoCode(
+    val latitude: Double,
+    val longitude: Double
 )
 
 @Serializable

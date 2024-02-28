@@ -31,4 +31,8 @@
     <string name="email_confirmation">Email Confirmation</string>
     <string name="resend_email">Resend</string>
     <string name="confirm_email_not_reached">"Didn't got confirmation email? "</string>
+    <string name="residence">Address (optional)</string>
+    <string name="user_details">User Details</string>
+    <string name="submit">Submit</string>
+    <string name="place_detail">Place Detail</string>
 </resources>

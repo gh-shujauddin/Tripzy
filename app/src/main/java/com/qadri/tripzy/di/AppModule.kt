@@ -3,6 +3,7 @@ package com.qadri.tripzy.di
 import android.content.Context
 import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.qadri.tripzy.data.TripzyDao
 import com.qadri.tripzy.data.TripzyDatabase
 import com.qadri.tripzy.data.TripzyRepository
@@ -36,6 +37,9 @@ object AppModule {
     @Singleton
     fun providesFirebaseAuth() = FirebaseAuth.getInstance()
 
+    @Provides
+    @Singleton
+    fun providesFirebaseDatabase() = FirebaseDatabase.getInstance()
 
     @OptIn(ExperimentalSerializationApi::class)
     @Singleton
@@ -48,7 +52,7 @@ object AppModule {
             }
             install(DefaultRequest) {
                 url(BASE_URL)
-                header("X-RapidAPI-Key", "a24fb067f8msh89b432e6ed58a64p1d18a4jsnf34dde548cd8")
+                header("X-RapidAPI-Key", "b0513957c3msh8fd3217e1a62e69p15c819jsn1085ad8d1abf")
                 header("X-RapidAPI-Host", "travel-advisor.p.rapidapi.com")
             }
             install(ContentNegotiation) {
@@ -70,8 +74,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideApiService(httpClient: HttpClient, dao: TripzyDao, firebaseAuth: FirebaseAuth): TripzyRepository =
-        TripzyRepositoryImpl(httpClient, dao, firebaseAuth)
+    fun provideApiService(httpClient: HttpClient, dao: TripzyDao, firebaseAuth: FirebaseAuth, firebaseDatabase: FirebaseDatabase, @ApplicationContext context: Context): TripzyRepository =
+        TripzyRepositoryImpl(httpClient, dao, firebaseAuth, firebaseDatabase, context)
 
 
     @Provides

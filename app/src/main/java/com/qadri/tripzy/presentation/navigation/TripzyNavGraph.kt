@@ -31,6 +31,8 @@ import com.qadri.tripzy.presentation.search.SearchDestination
 import com.qadri.tripzy.presentation.search.SearchScreen
 import com.qadri.tripzy.presentation.account.AccountDestination
 import com.qadri.tripzy.presentation.account.AccountScreen
+import com.qadri.tripzy.presentation.auth.AskDetailDestination
+import com.qadri.tripzy.presentation.auth.AskDetailScreen
 import com.qadri.tripzy.presentation.auth.AskLoginDestination
 import com.qadri.tripzy.presentation.auth.AskLoginScreen
 import com.qadri.tripzy.presentation.auth.ConfirmEmailDestination
@@ -46,6 +48,8 @@ import com.qadri.tripzy.presentation.auth.RegisterScreen
 import com.qadri.tripzy.presentation.auth.RegisterViewModel
 import com.qadri.tripzy.presentation.home.HomeDestination
 import com.qadri.tripzy.presentation.home.HomeScreen
+import com.qadri.tripzy.presentation.placeDetail.PlaceDetailDestination
+import com.qadri.tripzy.presentation.placeDetail.PlaceDetailScreen
 import com.qadri.tripzy.presentation.plan.PlanDestination
 import com.qadri.tripzy.presentation.plan.PlanScreen
 import com.qadri.tripzy.presentation.search.SearchFragment
@@ -96,6 +100,9 @@ fun TripzyNavHost(
                             launchSingleTop = true
                             restoreState = true
                         }
+                    },
+                    onItemClick = {
+                        navController.navigate("${PlaceDetailDestination.route}/$it")
                     }
                 )
             }
@@ -120,6 +127,10 @@ fun TripzyNavHost(
                             launchSingleTop = true
                             restoreState = true
                         }
+                    },
+                    onCardClick = {
+                        Log.d("Route", it.toString())
+                        navController.navigate("${PlaceDetailDestination.route}/$it")
                     }
                 )
             }
@@ -178,31 +189,40 @@ fun TripzyNavHost(
                 )
             }
 
-            composable(route = TestDestination.route) {
-                TestScreen(
-                    navController = navController,
-                    onClick = {
-                        navController.navigate(AskLoginDestination.route)
-                    },
-                    onBottomItemClick = {
-                        nav = bottomNavigationItems[it].route
-                        val f = false
-                        if (bottomNavigationItems[it] == BottomNavigationScreens.Search) {
-                            nav = "${nav}/$f"
-                        }
-                        navController.navigate(nav) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+//            composable(route = TestDestination.route) {
+//                TestScreen(
+//                    navController = navController,
+//                    onClick = {
+//                        navController.navigate(AskLoginDestination.route)
+//                    },
+//                    onBottomItemClick = {
+//                        nav = bottomNavigationItems[it].route
+//                        val f = false
+//                        if (bottomNavigationItems[it] == BottomNavigationScreens.Search) {
+//                            nav = "${nav}/$f"
+//                        }
+//                        navController.navigate(nav) {
+//                            popUpTo(navController.graph.findStartDestination().id) {
+//                                saveState = true
+//                            }
+//                            launchSingleTop = true
+//                            restoreState = true
+//                        }
+//                    }
+//                )
+//            }
+
+            composable(
+                route = PlaceDetailDestination.routeWithArgs,
+                arguments = listOf(navArgument(PlaceDetailDestination.placeIdArg) {
+                    type = NavType.IntType
+                })
+            ) {
+                PlaceDetailScreen(
+                    onNavigateUp = {
+                        navController.popBackStack()
                     }
                 )
-            }
-
-            composable(SearchFragmentDestination.route) {
-                SearchFragment()
             }
         }
 
@@ -299,7 +319,15 @@ fun TripzyNavHost(
             composable(route = ConfirmEmailDestination.route) {
                 ConfirmEmailScreen(
                     onNavigateUp = { navController.popBackStack() },
-                    onEmailVerify = { navController.navigate(HomeDestination.route) }
+                    onEmailVerify = { navController.navigate(AskDetailDestination.route) }
+                )
+            }
+            composable(route = AskDetailDestination.route) {
+                AskDetailScreen(
+                    navigateToHome = {
+                        navController.navigate(HomeDestination.route)
+                        Toast.makeText(context, "Details saved", Toast.LENGTH_LONG).show()
+                    }
                 )
             }
         }

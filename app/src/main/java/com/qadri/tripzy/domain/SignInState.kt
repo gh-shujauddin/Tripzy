@@ -9,6 +9,12 @@ data class SignInState(
     val isError: String? = ""
 )
 
+data class RecommendedPlace(
+    val isLoading: Boolean = false,
+    val isSuccess: String? = "",
+    val isError: String? = ""
+)
+
 data class SignInState1(
     val isSignInSuccessful: Boolean = false,
     val signInError: String? = null

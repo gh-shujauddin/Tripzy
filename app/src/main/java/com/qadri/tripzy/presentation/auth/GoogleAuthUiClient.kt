@@ -9,6 +9,7 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.GeoPoint
 import com.qadri.tripzy.constants.ServerClient
 import com.qadri.tripzy.domain.SignInResult
 import com.qadri.tripzy.domain.UserData
@@ -45,7 +46,7 @@ class GoogleAuthUiClient(
                     UserData(
                         userId = uid,
                         username = displayName,
-                        profilePictureUrl = photoUrl?.toString()
+                        location = GeoPoint(0.0,0.0)
                     )
                 },
                 errorMessage = null
@@ -64,7 +65,7 @@ class GoogleAuthUiClient(
         UserData(
             userId = uid,
             username = displayName,
-            profilePictureUrl = photoUrl?.toString()
+            location = GeoPoint(0.0,0.0)
         )
     }
 

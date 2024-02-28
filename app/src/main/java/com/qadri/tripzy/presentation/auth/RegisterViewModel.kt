@@ -3,17 +3,24 @@ package com.qadri.tripzy.presentation.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.GeoPoint
 import com.qadri.tripzy.data.TripzyRepository
+import com.qadri.tripzy.domain.ApiResult
 import com.qadri.tripzy.domain.ConfirmEmail
+import com.qadri.tripzy.domain.LocationResult
 import com.qadri.tripzy.domain.RegisterDetails
 import com.qadri.tripzy.domain.RegisterResponse
 import com.qadri.tripzy.domain.RegisterState
 import com.qadri.tripzy.domain.Resource
+import com.qadri.tripzy.domain.SaveUserDetail
 import com.qadri.tripzy.domain.SignInState1
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,6 +37,9 @@ class RegisterViewModel @Inject constructor(
 
     private val _confirmEmailState = Channel<ConfirmEmail>()
     val confirmEmail = _confirmEmailState.receiveAsFlow()
+
+    private val _saveUserState = Channel<SaveUserDetail>()
+    val saveUserState = _saveUserState.receiveAsFlow()
 
     private val _isEmailVerified = MutableStateFlow(false)
     val isEmailVerified = _isEmailVerified.asStateFlow()
@@ -77,6 +87,22 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
+    fun saveUser(name: String, latitude: Double, longitude: Double) = viewModelScope.launch {
+        repository.addUserDetail(name, latitude, longitude).collect{ result ->
+            when(result) {
+                is Resource.Error -> {
+                    _saveUserState.send(SaveUserDetail(isError = result.message))
+                }
+                is Resource.Loading -> {
+                    _saveUserState.send(SaveUserDetail(isLoading = true))
+                }
+                is Resource.Success -> {
+                    _saveUserState.send(SaveUserDetail(isSuccess = "Details updated"))
+                }
+            }
+        }
+    }
+
     private val _registerState = MutableStateFlow(RegisterDetails())
     val registerState = _registerState.asStateFlow()
 
@@ -84,6 +110,28 @@ class RegisterViewModel @Inject constructor(
         _registerState.value = registerDetails
     }
 
+    fun addUserDetail(name: String, latitude: Double, longitude: Double) {
+        repository.addUserDetail(name, latitude, longitude)
+    }
+
     private var _registerResponse = MutableStateFlow(RegisterResponse())
     val registerResponse = _registerResponse.asStateFlow()
+
+    private val _searchAutoComplete = MutableStateFlow<ApiResult<LocationResult>>(ApiResult.Loading())
+    val searchAutoComplete = _searchAutoComplete.asStateFlow()
+
+
+    fun fetchSearchAutoComplete(location: String) {
+        viewModelScope.launch {
+            repository.getSearchAutoComplete(string = location)
+                .flowOn(Dispatchers.Default)
+                .catch {
+                    _searchAutoComplete.value = ApiResult.Error(it.message ?: "Something went wrong")
+                }
+                .collect{
+                    _searchAutoComplete.value = it
+                }
+
+        }
+    }
 }

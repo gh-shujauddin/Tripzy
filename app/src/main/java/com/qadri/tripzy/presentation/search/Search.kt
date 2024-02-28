@@ -6,6 +6,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -86,6 +87,7 @@ fun SearchScreen(
     defaultSelectedIndex: Int = bottomNavigationItems.indexOf(BottomNavigationScreens.Search),
     navController: NavController,
     onBottomItemClick: (Int) -> Unit,
+    onCardClick: (Int) -> Unit,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
@@ -151,17 +153,17 @@ fun SearchScreen(
 //                apiResult = apiResult
 //            )
             SearchBar(
-                    hint = "Places, attractions, etc",
-                    searchQuery = searchQuery,
-                    onSearchClicked = {
-                        scope.launch {
-                            viewModel.updateRecentSearch()
-                        }
-                        viewModel.changeFocus(false)
-                    },
-                    onTextChange = viewModel::onQueryChange,
-                    height = 40.dp
-                )
+                hint = "Places, attractions, etc",
+                searchQuery = searchQuery,
+                onSearchClicked = {
+                    scope.launch {
+                        viewModel.updateRecentSearch()
+                    }
+                    viewModel.changeFocus(false)
+                },
+                onTextChange = viewModel::onQueryChange,
+                height = 40.dp
+            )
 
 
             when (apiResult) {
@@ -195,7 +197,9 @@ fun SearchScreen(
 
                         is ApiResult.Success -> {
                             if (result.image != null && result.detailsV2 != null) {
-                                SearchCard(result = result)
+                                SearchCard(result = result, onCardClick = {
+                                    result.detailsV2.locationId.let { it1 -> onCardClick(it1) }
+                                })
                                 Spacer(modifier = Modifier.height(12.dp))
                             }
                         }
@@ -223,13 +227,15 @@ fun SearchScreen(
 
 @Composable
 fun SearchCard(
-    result: Result
+    result: Result,
+    onCardClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
             .clip(MaterialTheme.shapes.small)
+            .clickable { onCardClick() }
     ) {
         Box(
             modifier = Modifier
