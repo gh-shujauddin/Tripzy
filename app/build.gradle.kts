@@ -29,22 +29,22 @@ android {
 
     buildTypes {
         debug {
-            val localProperties = Properties()
-            localProperties.load(FileInputStream(rootProject.file("local.properties")))
-            buildConfigField("String", "API_KEY", "${localProperties["API_KEY"]}")
-            buildConfigField("String", "Here_API_KEY", "${localProperties["Here_API_KEY"]}")
-            buildConfigField("String", "Places_API_KEY", "${localProperties["Places_API_KEY"]}")
-            buildConfigField("String", "ServerClient", "${localProperties["ServerClient"]}")
-            buildConfigField("String", "X_RapidAPI_Key", "${localProperties["X_RapidAPI_Key"]}")
+            val apiKeyProperties = Properties()
+            apiKeyProperties.load(FileInputStream(rootProject.file("apiKey.properties")))
+            buildConfigField("String", "API_KEY", "${apiKeyProperties["API_KEY"]}")
+            buildConfigField("String", "Here_API_KEY", "${apiKeyProperties["Here_API_KEY"]}")
+            buildConfigField("String", "Places_API_KEY", "${apiKeyProperties["Places_API_KEY"]}")
+            buildConfigField("String", "ServerClient", "${apiKeyProperties["ServerClient"]}")
+            buildConfigField("String", "X_RapidAPI_Key", "${apiKeyProperties["X_RapidAPI_Key"]}")
         }
         release {
-            val localProperties = Properties()
-            localProperties.load(FileInputStream(rootProject.file("local.properties")))
-            buildConfigField("String", "API_KEY", "${localProperties["API_KEY"]}")
-            buildConfigField("String", "Here_API_KEY", "${localProperties["Here_API_KEY"]}")
-            buildConfigField("String", "Places_API_KEY", "${localProperties["Places_API_KEY"]}")
-            buildConfigField("String", "ServerClient", "${localProperties["ServerClient"]}")
-            buildConfigField("String", "X_RapidAPI_Key", "${localProperties["X_RapidAPI_Key"]}")
+            val apiKeyProperties = Properties()
+            apiKeyProperties.load(FileInputStream(rootProject.file("apiKey.properties")))
+            buildConfigField("String", "API_KEY", "${apiKeyProperties["API_KEY"]}")
+            buildConfigField("String", "Here_API_KEY", "${apiKeyProperties["Here_API_KEY"]}")
+            buildConfigField("String", "Places_API_KEY", "${apiKeyProperties["Places_API_KEY"]}")
+            buildConfigField("String", "ServerClient", "${apiKeyProperties["ServerClient"]}")
+            buildConfigField("String", "X_RapidAPI_Key", "${apiKeyProperties["X_RapidAPI_Key"]}")
 
             isMinifyEnabled = false
             proguardFiles(
