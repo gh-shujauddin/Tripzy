@@ -1,10 +1,6 @@
 package com.qadri.tripzy.utils
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,15 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,39 +25,27 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
@@ -108,13 +88,6 @@ fun NonlazyGrid(
 
 
 const val DEFAULT_MINIMUM_TEXT_LINE = 5
-
-fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
-    clickable(indication = null,
-        interactionSource = remember { MutableInteractionSource() }) {
-        onClick()
-    }
-}
 
 @Composable
 fun ExpandableText(
@@ -258,115 +231,44 @@ fun LoadingCircularProgressIndicator() {
 }
 
 @Composable
-fun SearchBar(
-    searchQuery: String,
-    hint: String,
-    modifier: Modifier = Modifier,
-    isEnabled: (Boolean) = true,
-    height: Dp = 40.dp,
-    elevation: Dp = 3.dp,
-    cornerShape: Shape = MaterialTheme.shapes.small,
-    backgroundColor: Color = Color.White,
-    onSearchClicked: () -> Unit = {},
-    hideKeyboard: Boolean = false,
-    onFocusClear: () -> Unit = {},
-    onTextChange: (String) -> Unit = {},
+fun AlertDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector? = null,
 ) {
-    var text by remember { mutableStateOf(TextFieldValue()) }
-    val focusManager = LocalFocusManager.current
-    var isHintDisplayed by remember {
-        mutableStateOf(false)
-    }
-    var isTextFieldFocused by remember {
-        mutableStateOf(false)
-    }
-    Row(
-        modifier = Modifier
-            .height(56.dp)
-            .fillMaxWidth()
-            .border(1.dp, if (isTextFieldFocused) MaterialTheme.colorScheme.primary else Color.Transparent, shape = MaterialTheme.shapes.large )
-
-            .clip(if (isTextFieldFocused) MaterialTheme.shapes.large else MaterialTheme.shapes.small)
-            .shadow(elevation = elevation, shape = cornerShape)
-            .background(color = backgroundColor, shape = cornerShape)
-            .clickable { onSearchClicked() },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        BasicTextField(
-            modifier = modifier
-                .weight(5f)
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .onFocusChanged {
-                    isHintDisplayed = !it.hasFocus
-                    isTextFieldFocused = it.hasFocus
-                },
-            value = searchQuery,
-            onValueChange = {
-                onTextChange(it)
-            },
-            enabled = isEnabled,
-            textStyle = TextStyle(
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            decorationBox = { innerTextField ->
-                if (searchQuery.isEmpty()) {
-                    Text(
-                        text = hint,
-                        color = Color.Gray.copy(alpha = 0.5f),
-                        fontSize = 16.sp
-                    )
+    AlertDialog(
+        icon = {
+            if (icon != null)
+                Icon(icon, contentDescription = "Icon")
+        },
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            Text(text = dialogText)
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
                 }
-                innerTextField()
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(onSearch = {
-                focusManager.clearFocus()
-                onSearchClicked()
-            }),
-            singleLine = true
-        )
-        Box(
-            modifier = modifier
-                .weight(1f)
-                .size(40.dp)
-                .background(color = Color.Transparent, shape = CircleShape)
-                .clickable {
-                    if (text.text.isNotEmpty()) {
-                        text = TextFieldValue(text = "")
-                        onTextChange("")
-                    }
-                },
-        ) {
-            if (text.text.isNotEmpty()) {
-                Icon(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(10.dp),
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = stringResource(R.string.search),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            } else {
-                Icon(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(10.dp),
-                    painter = painterResource(id = R.drawable.search),
-                    contentDescription = stringResource(R.string.search),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Dismiss")
             }
         }
-        if (hideKeyboard) {
-            focusManager.clearFocus()
-            // Call onFocusClear to reset hideKeyboard state to false
-            onFocusClear()
-        }
-    }
+    )
 }

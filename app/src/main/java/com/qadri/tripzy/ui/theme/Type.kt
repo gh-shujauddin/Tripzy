@@ -27,7 +27,7 @@ val Typography = Typography(
     bodyMedium = TextStyle(
         fontFamily = poppinsBlack,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
+        fontSize = 16.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.5.sp
     ),
@@ -59,7 +59,7 @@ val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = poppinsBlack,
         fontWeight = FontWeight.Bold,
-        fontSize = 26.sp
+        fontSize = 30.sp
     ),
     displayMedium = TextStyle(
         fontFamily = poppinsBlack,
@@ -82,7 +82,5 @@ val Typography = Typography(
         fontFamily = poppinsBlack,
         fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
     )
 )

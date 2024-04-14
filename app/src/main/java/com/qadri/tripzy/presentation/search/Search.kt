@@ -1,11 +1,13 @@
 package com.qadri.tripzy.presentation.search
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,9 +25,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +38,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,7 +56,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import coil.request.SuccessResult
 import coil.size.Scale
 import com.qadri.tripzy.R
 import com.qadri.tripzy.constants.Cities
@@ -62,9 +68,11 @@ import com.qadri.tripzy.domain.Result
 import com.qadri.tripzy.presentation.navigation.BottomNavigationScreens
 import com.qadri.tripzy.presentation.navigation.NavigationDestination
 import com.qadri.tripzy.presentation.navigation.TripzyBottomNavigation
+import com.qadri.tripzy.utils.AlertDialog
 import com.qadri.tripzy.utils.CardsRow
 import com.qadri.tripzy.utils.LoadingCircularProgressIndicator
 import com.qadri.tripzy.utils.NonlazyGrid
+import com.qadri.tripzy.utils.SearchBar
 import kotlinx.coroutines.launch
 
 object SearchDestination : NavigationDestination {
@@ -79,6 +87,7 @@ fun SearchScreen(
     defaultSelectedIndex: Int = bottomNavigationItems.indexOf(BottomNavigationScreens.Search),
     navController: NavController,
     onBottomItemClick: (Int) -> Unit,
+    onCardClick: (Int) -> Unit,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
@@ -99,11 +108,36 @@ fun SearchScreen(
             onBottomItemClick = onBottomItemClick
         )
     }) {
+
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .padding(start = 12.dp, end = 12.dp, top = it.calculateTopPadding())
         ) {
+
+            var openAlertDialog by remember { mutableStateOf(false) }
+            var openAlertDialogItem by remember {
+                mutableStateOf(Recents(0, ""))
+            }
+            // ...
+            when {
+                // ...
+                openAlertDialog -> {
+                    AlertDialog(
+                        onDismissRequest = { openAlertDialog = false },
+                        onConfirmation = {
+                            openAlertDialog = false
+                            scope.launch {
+                                if (openAlertDialogItem.recentResult.isNotEmpty())
+                                    viewModel.deleteRecentSearch(openAlertDialogItem)
+                            }
+                            println("Confirmation registered") // Add logic here to handle confirmation.
+                        },
+                        dialogTitle = "Deleting confirmation",
+                        dialogText = "Are you sure to delete ${openAlertDialogItem.recentResult} from recent searches?"
+                    )
+                }
+            }
 //            SearchBar(
 //                searchQuery = searchQuery,
 //                onQueryChange = viewModel::onQueryChange,
@@ -118,19 +152,18 @@ fun SearchScreen(
 //                onCardClick = viewModel::onQueryChange,
 //                apiResult = apiResult
 //            )
-            com.qadri.tripzy.utils
-                .SearchBar(
-                    hint = "Places, attractions, etc",
-                    searchQuery = searchQuery,
-                    onSearchClicked = {
-                        scope.launch{
-                            viewModel.updateRecentSearch()
-                        }
-                        viewModel.changeFocus(false)
-                    },
-                    onTextChange = viewModel::onQueryChange,
-                    height = 40.dp
-                )
+            SearchBar(
+                hint = "Places, attractions, etc",
+                searchQuery = searchQuery,
+                onSearchClicked = {
+                    scope.launch {
+                        viewModel.updateRecentSearch()
+                    }
+                    viewModel.changeFocus(false)
+                },
+                onTextChange = viewModel::onQueryChange,
+                height = 40.dp
+            )
 
 
             when (apiResult) {
@@ -143,10 +176,7 @@ fun SearchScreen(
                 else -> {}
             }
 
-            RecentSearches(
-                recentListFromDb = recentSearches,
-                onCardClick = viewModel::onQueryChange
-            )
+
             LazyColumn(modifier = Modifier.weight(1f)) {
 
                 items(locationResultList) { result ->
@@ -167,7 +197,9 @@ fun SearchScreen(
 
                         is ApiResult.Success -> {
                             if (result.image != null && result.detailsV2 != null) {
-                                SearchCard(result = result)
+                                SearchCard(result = result, onCardClick = {
+                                    result.detailsV2.locationId.let { it1 -> onCardClick(it1) }
+                                })
                                 Spacer(modifier = Modifier.height(12.dp))
                             }
                         }
@@ -175,8 +207,16 @@ fun SearchScreen(
                 }
 
                 item {
-                    Headings(text = "Top Experiences")
-                    CardsRow()
+                    RecentSearches(
+                        recentListFromDb = recentSearches,
+                        onCardClick = viewModel::onQueryChange,
+                        onLongCardClick = { recent ->
+                            openAlertDialog = true
+                            openAlertDialogItem = recent
+                        }
+                    )
+//                    Headings(text = "Top Experiences")
+//                    CardsRow()
                     CityCards()
                 }
             }
@@ -185,93 +225,17 @@ fun SearchScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SearchBar(
-    searchQuery: String,
-    onQueryChange: (String) -> Unit,
-    isSearchActive: Boolean,
-    onSearch: (String) -> Unit,
-    onActiveChange: (Boolean) -> Unit,
-    recentSearches: List<Recents> = listOf(),
-    onCardClick: (String) -> Unit = {},
-    apiResult: ApiResult<LocationResult>
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        androidx.compose.material3.SearchBar(modifier = Modifier
-            .defaultMinSize(
-                minWidth = SearchBarDefaults.InputFieldHeight,
-                minHeight = 48.dp
-            )
-            .fillMaxWidth(),
-            query = searchQuery,
-            onQueryChange = onQueryChange,
-            onSearch = onSearch,
-            active = isSearchActive,
-            onActiveChange = onActiveChange,
-            shape = MaterialTheme.shapes.small,
-            colors = SearchBarDefaults.colors(
-                containerColor = Color.White, inputFieldColors = TextFieldDefaults.colors(
-                    cursorColor = Color.Black
-                )
-            ),
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.search),
-                    contentDescription = "Search",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        ) {
-
-            RecentSearches(recentListFromDb = recentSearches, onCardClick = onCardClick)
-
-            when (apiResult) {
-                is ApiResult.Loading -> {
-                    if (searchQuery.isNotBlank()) {
-                        LoadingCircularProgressIndicator()
-
-                    }
-                }
-
-                is ApiResult.Error -> {
-                    Toast.makeText(LocalContext.current, apiResult.error, Toast.LENGTH_SHORT).show()
-                }
-
-                is ApiResult.Success -> {
-                    val locationResultList =
-                        apiResult.data?.data?.Typeahead_autocomplete?.results ?: listOf()
-                    Spacer(modifier = Modifier.height(16.dp))
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(locationResultList) { result ->
-                            if (result.image != null && result.detailsV2 != null) {
-
-                                SearchCard(result = result)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-
 @Composable
 fun SearchCard(
-    result: Result
+    result: Result,
+    onCardClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
             .clip(MaterialTheme.shapes.small)
+            .clickable { onCardClick() }
     ) {
         Box(
             modifier = Modifier
@@ -344,14 +308,22 @@ fun SearchCard(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RecentSearches(recentListFromDb: List<Recents>, onCardClick: (String) -> Unit) {
+fun RecentSearches(
+    recentListFromDb: List<Recents>,
+    onCardClick: (String) -> Unit,
+    onLongCardClick: (Recents) -> Unit = {}
+) {
 
     val recentList = recentListFromDb.reversed()
     Column {
         Spacer(modifier = Modifier.height(24.dp))
-        Text(text = "Recently searched", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(start = 8.dp))
+        Text(
+            text = "Recently searched",
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(start = 8.dp)
+        )
 
         LazyRow(
             modifier = Modifier
@@ -361,10 +333,15 @@ fun RecentSearches(recentListFromDb: List<Recents>, onCardClick: (String) -> Uni
         ) {
             items(recentList) { recent ->
                 Card(
-                    onClick = { onCardClick(recent.recentResult) },
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(start = 8.dp),
+                        .padding(start = 8.dp)
+                        .combinedClickable(
+                            onLongClick = { onLongCardClick(recent) },
+                            onClick = { onCardClick(recent.recentResult) }
+                        ),
+//                    onClick = { onCardClick(recent.recentResult) },
+
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     colors = CardDefaults.cardColors(Color.White),
                     shape = MaterialTheme.shapes.small

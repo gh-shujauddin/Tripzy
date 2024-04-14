@@ -1,10 +1,13 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-//    id("kotlin-kapt")
     id ("dagger.hilt.android.plugin")
     id ("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.devtools.ksp")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -13,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.qadri.tripzy"
-        minSdk = 24
+        minSdk = 27
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -25,7 +28,24 @@ android {
     }
 
     buildTypes {
+        debug {
+            val apiKeyProperties = Properties()
+            apiKeyProperties.load(FileInputStream(rootProject.file("apiKey.properties")))
+            buildConfigField("String", "API_KEY", "${apiKeyProperties["API_KEY"]}")
+            buildConfigField("String", "Here_API_KEY", "${apiKeyProperties["Here_API_KEY"]}")
+            buildConfigField("String", "Places_API_KEY", "${apiKeyProperties["Places_API_KEY"]}")
+            buildConfigField("String", "ServerClient", "${apiKeyProperties["ServerClient"]}")
+            buildConfigField("String", "X_RapidAPI_Key", "${apiKeyProperties["X_RapidAPI_Key"]}")
+        }
         release {
+            val apiKeyProperties = Properties()
+            apiKeyProperties.load(FileInputStream(rootProject.file("apiKey.properties")))
+            buildConfigField("String", "API_KEY", "${apiKeyProperties["API_KEY"]}")
+            buildConfigField("String", "Here_API_KEY", "${apiKeyProperties["Here_API_KEY"]}")
+            buildConfigField("String", "Places_API_KEY", "${apiKeyProperties["Places_API_KEY"]}")
+            buildConfigField("String", "ServerClient", "${apiKeyProperties["ServerClient"]}")
+            buildConfigField("String", "X_RapidAPI_Key", "${apiKeyProperties["X_RapidAPI_Key"]}")
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -42,6 +62,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -58,7 +79,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.activity:activity-compose:1.7.0")
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+    implementation(platform("androidx.compose:compose-bom:2024.04.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-util:1.3.0")
     implementation("androidx.compose.ui:ui-graphics")
@@ -66,12 +87,17 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended:1.5.3")
     implementation("androidx.navigation:navigation-compose:2.6.0")
-
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
     //Coil
     implementation("io.coil-kt:coil-compose:2.5.0")
 
-    //Dagger - Hilt
+
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
+    implementation("com.google.firebase:firebase-database-ktx:20.3.0")
+//Dagger - Hilt
     implementation("com.google.dagger:hilt-android:2.47")
+    implementation("com.google.android.gms:play-services-location:21.2.0")
     ksp ("com.google.dagger:hilt-compiler:2.47")
     implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
 
@@ -84,11 +110,34 @@ dependencies {
     implementation ("io.ktor:ktor-client-content-negotiation:2.1.3")
     implementation ("io.ktor:ktor-serialization-kotlinx-json:2.1.3")
     implementation ("io.ktor:ktor-client-logging:2.1.3")
+    implementation("io.ktor:ktor-serialization-gson:2.3.2")
 
     // Room
     implementation ("androidx.room:room-runtime:2.6.1")
     ksp ("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.1")
+
+    //Firebase
+    implementation("com.google.firebase:firebase-auth:22.3.0")
+    implementation("com.google.firebase:firebase-storage:20.3.0")
+
+    // Maps
+    implementation(project(":maps"))
+
+    // Dialogs
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
+    // Swipe
+    implementation("me.saket.swipe:swipe:1.2.0")
+
+    //Lottie-compose
+    implementation("com.airbnb.android:lottie-compose:5.2.0")
+
+    // Reorderable Lists
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
+
+    implementation ("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

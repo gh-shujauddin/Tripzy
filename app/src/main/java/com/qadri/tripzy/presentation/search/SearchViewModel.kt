@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.qadri.tripzy.domain.ApiResult
 import com.qadri.tripzy.domain.LocationResult
 import com.qadri.tripzy.domain.Recents
-import com.qadri.tripzy.network.TripzyRepository
+import com.qadri.tripzy.data.TripzyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -82,6 +82,12 @@ class SearchViewModel @Inject constructor(
         Log.d("Recent", _uiState.value.searchQuery)
         viewModelScope.launch {
             tripzyRepository.addRecentSearch(Recents(0, _uiState.value.searchQuery))
+        }
+    }
+
+    suspend fun deleteRecentSearch(recent: Recents) {
+        viewModelScope.launch {
+            tripzyRepository.deleteRecentSearch(recent)
         }
     }
 }

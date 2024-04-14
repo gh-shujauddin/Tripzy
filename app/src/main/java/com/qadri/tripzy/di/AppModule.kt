@@ -2,10 +2,16 @@ package com.qadri.tripzy.di
 
 import android.content.Context
 import androidx.room.Room
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.qadri.tripzy.BuildConfig
+import com.qadri.tripzy.data.DatabaseRepository
+import com.qadri.tripzy.data.DatabaseRepositoryImpl
 import com.qadri.tripzy.data.TripzyDao
 import com.qadri.tripzy.data.TripzyDatabase
-import com.qadri.tripzy.network.TripzyRepository
-import com.qadri.tripzy.network.TripzyRepositoryImpl
+import com.qadri.tripzy.data.TripzyRepository
+import com.qadri.tripzy.data.TripzyRepositoryImpl
 import com.qadri.tripzy.ui.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -30,6 +36,15 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+
+    @Provides
+    @Singleton
+    fun providesFirebaseAuth() = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    fun providesFirebaseFirestore() = FirebaseFirestore.getInstance()
+
     @OptIn(ExperimentalSerializationApi::class)
     @Singleton
     @Provides
@@ -41,7 +56,7 @@ object AppModule {
             }
             install(DefaultRequest) {
                 url(BASE_URL)
-                header("X-RapidAPI-Key", "{Your Rapid Api Key}")
+                header("X-RapidAPI-Key", BuildConfig.X_RapidAPI_Key)
                 header("X-RapidAPI-Host", "travel-advisor.p.rapidapi.com")
             }
             install(ContentNegotiation) {
@@ -63,8 +78,13 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideApiService(httpClient: HttpClient, dao: TripzyDao): TripzyRepository =
-        TripzyRepositoryImpl(httpClient, dao)
+    fun provideApiService(httpClient: HttpClient, dao: TripzyDao, firebaseAuth: FirebaseAuth, firebaseFirestore: FirebaseFirestore, @ApplicationContext context: Context): TripzyRepository =
+        TripzyRepositoryImpl(httpClient, dao, firebaseAuth, firebaseFirestore, context)
+
+    @Singleton
+    @Provides
+    fun providesDatabaseRepo(dao: TripzyDao): DatabaseRepository =
+        DatabaseRepositoryImpl(dao)
 
 
     @Provides
@@ -77,6 +97,8 @@ object AppModule {
             app,
             TripzyDatabase::class.java,
             "tripzy_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
 
 }
