@@ -35,7 +35,7 @@ android {
             buildConfigField("String", "Here_API_KEY", "${localProperties["Here_API_KEY"]}")
             buildConfigField("String", "Places_API_KEY", "${localProperties["Places_API_KEY"]}")
             buildConfigField("String", "ServerClient", "${localProperties["ServerClient"]}")
-
+            buildConfigField("String", "X_RapidAPI_Key", "${localProperties["X_RapidAPI_Key"]}")
         }
         release {
             val localProperties = Properties()
@@ -44,6 +44,8 @@ android {
             buildConfigField("String", "Here_API_KEY", "${localProperties["Here_API_KEY"]}")
             buildConfigField("String", "Places_API_KEY", "${localProperties["Places_API_KEY"]}")
             buildConfigField("String", "ServerClient", "${localProperties["ServerClient"]}")
+            buildConfigField("String", "X_RapidAPI_Key", "${localProperties["X_RapidAPI_Key"]}")
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.qadri.tripzy.BuildConfig
 import com.qadri.tripzy.data.DatabaseRepository
 import com.qadri.tripzy.data.DatabaseRepositoryImpl
 import com.qadri.tripzy.data.TripzyDao
@@ -55,7 +56,7 @@ object AppModule {
             }
             install(DefaultRequest) {
                 url(BASE_URL)
-                header("X-RapidAPI-Key", "b0513957c3msh8fd3217e1a62e69p15c819jsn1085ad8d1abf")
+                header("X-RapidAPI-Key", BuildConfig.X_RapidAPI_Key)
                 header("X-RapidAPI-Host", "travel-advisor.p.rapidapi.com")
             }
             install(ContentNegotiation) {
