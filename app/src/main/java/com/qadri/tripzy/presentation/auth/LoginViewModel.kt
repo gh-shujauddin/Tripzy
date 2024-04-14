@@ -11,6 +11,7 @@ import com.qadri.tripzy.domain.Resource
 import com.qadri.tripzy.domain.SignInResult
 import com.qadri.tripzy.domain.SignInState
 import com.qadri.tripzy.domain.SignInState1
+import com.qadri.tripzy.presentation.account.CurrentUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +36,9 @@ class LoginViewModel @Inject constructor(
     private val _currentUser = MutableStateFlow(FirebaseAuth.getInstance().currentUser)
     val currentUser = _currentUser.asStateFlow()
 
+
+    private val _currentUserStatus = Channel<CurrentUser>()
+    val currentUserStatus = _currentUserStatus.receiveAsFlow()
 
     fun onSignInWithGoogleResult(result: SignInResult) {
         _state.update {
@@ -70,9 +74,26 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun logoutUser() {
-        FirebaseAuth.getInstance().signOut()
-    }
+    fun getUserDetails() =
+        viewModelScope.launch {
+
+            repository.getCurrentUser().collect{ result ->
+                when(result) {
+                    is Resource.Error -> {
+                        _currentUserStatus.send(CurrentUser(isError = result.message))
+                    }
+
+                    is Resource.Loading -> {
+                        _currentUserStatus.send(CurrentUser(isLoading = true))
+                    }
+
+                    is Resource.Success -> {
+                        _currentUserStatus.send(CurrentUser(isSuccess = result.data))
+
+                    }
+                }
+            }
+        }
 
     private val _loginUiState = MutableStateFlow(LoginDetails())
     val loginUiState = _loginUiState.asStateFlow()

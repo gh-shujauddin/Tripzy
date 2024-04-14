@@ -333,7 +333,6 @@ fun PhotoCarousel(
         val photoLinks = getPlacePhotoApiResult.data?.data?.map {
             it.images.original.url
         } ?: listOf("")
-        val place = photoLinks[0]
         val pagerState = rememberPagerState(
             pageCount = {
                 photoLinks.size
@@ -377,11 +376,11 @@ fun PhotoCarousel(
                             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background)
                         ) {
                             Box(modifier = Modifier.fillMaxSize()) {
-
-
+                                Log.d("Photo", photoLinks[page])
+                                val imageLink = photoLinks[page]
                                 AsyncImage(
                                     model = ImageRequest.Builder(LocalContext.current)
-                                        .data(photoLinks?.get(page))
+                                        .data(imageLink)
                                         .crossfade(true)
                                         .scale(Scale.FILL)
                                         .build(),
@@ -389,11 +388,9 @@ fun PhotoCarousel(
                                     placeholder = painterResource(id = R.drawable.lake),
                                     error = painterResource(id = R.drawable.ic_error_image_generic),
                                     modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
+                                    contentScale = ContentScale.FillWidth
                                 )
                             }
-
-
                         }
                         Card(
                             onClick = onNavigateUp,

@@ -9,6 +9,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,11 +25,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.firebase.auth.FirebaseAuth
 import com.qadri.tripzy.constants.bottomNavigationItems
-import com.qadri.tripzy.presentation.TestDestination
-import com.qadri.tripzy.presentation.TestScreen
-import com.qadri.tripzy.presentation.search.SearchDestination
-import com.qadri.tripzy.presentation.search.SearchScreen
 import com.qadri.tripzy.presentation.account.AccountDestination
 import com.qadri.tripzy.presentation.account.AccountScreen
 import com.qadri.tripzy.presentation.auth.AskDetailDestination
@@ -45,15 +43,24 @@ import com.qadri.tripzy.presentation.auth.LoginScreen
 import com.qadri.tripzy.presentation.auth.LoginViewModel
 import com.qadri.tripzy.presentation.auth.RegisterDestination
 import com.qadri.tripzy.presentation.auth.RegisterScreen
-import com.qadri.tripzy.presentation.auth.RegisterViewModel
 import com.qadri.tripzy.presentation.home.HomeDestination
 import com.qadri.tripzy.presentation.home.HomeScreen
+import com.qadri.tripzy.presentation.home.HomeViewModel
 import com.qadri.tripzy.presentation.placeDetail.PlaceDetailDestination
 import com.qadri.tripzy.presentation.placeDetail.PlaceDetailScreen
+import com.qadri.tripzy.presentation.plan.NewTripDestination
+import com.qadri.tripzy.presentation.plan.NewTripScreen
+import com.qadri.tripzy.presentation.plan.NewTripViewModel
 import com.qadri.tripzy.presentation.plan.PlanDestination
 import com.qadri.tripzy.presentation.plan.PlanScreen
-import com.qadri.tripzy.presentation.search.SearchFragment
-import com.qadri.tripzy.presentation.search.SearchFragmentDestination
+import com.qadri.tripzy.presentation.plan.PlanViewModel
+import com.qadri.tripzy.presentation.plan.tripDetails.TripDetailDestination
+import com.qadri.tripzy.presentation.plan.tripDetails.TripDetailsScreen
+import com.qadri.tripzy.presentation.search.SearchDestination
+import com.qadri.tripzy.presentation.search.SearchScreen
+import com.qadri.tripzy.ui.SplashDestination
+import com.qadri.tripzy.ui.SplashScreen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -68,12 +75,35 @@ fun TripzyNavHost(
             oneTapClient = Identity.getSignInClient(context)
         )
     }
+    val firebase = FirebaseAuth.getInstance()
+    val user = firebase.currentUser
+
+    val planViewModel: PlanViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
+
     var nav by remember {
         mutableStateOf("home")
     }
+
+    val startDestination =
+        if (user != null) {
+            HomeDestination.route
+        } else {
+            "auth_nav"
+        }
     NavHost(navController = navController, startDestination = "bottom_nav") {
 
-        navigation(startDestination = HomeDestination.route, route = "bottom_nav") {
+        navigation(startDestination = SplashDestination.route, route = "bottom_nav") {
+            composable(SplashDestination.route) {
+                SplashScreen(
+                    onComplete = {
+                        scope.launch(Dispatchers.Main) {
+                            navController.popBackStack()
+                            navController.navigate(startDestination)
+                        }
+                    }
+                )
+            }
             composable(route = HomeDestination.route) {
                 HomeScreen(
                     navController = navController,
@@ -103,7 +133,8 @@ fun TripzyNavHost(
                     },
                     onItemClick = {
                         navController.navigate("${PlaceDetailDestination.route}/$it")
-                    }
+                    },
+                    homeViewModel = homeViewModel
                 )
             }
             composable(
@@ -150,8 +181,23 @@ fun TripzyNavHost(
                             launchSingleTop = true
                             restoreState = true
                         }
-                    }
+                    },
+                    planViewModel = planViewModel
+                )
+            }
+            composable(route = NewTripDestination.route) {
+                val viewModel: NewTripViewModel = hiltViewModel()
 
+                NewTripScreen(
+                    viewModel = viewModel,
+                    planViewModel = planViewModel,
+                    navController = navController
+                )
+            }
+            composable(TripDetailDestination.route) {
+                TripDetailsScreen(
+                    viewModel = planViewModel,
+                    navController = navController
                 )
             }
             composable(route = AccountDestination.route) {
@@ -179,7 +225,7 @@ fun TripzyNavHost(
                         scope.launch {
                             googleAuthUiClient.signOut()
                         }
-                        navController.navigate(HomeDestination.route)
+                        navController.navigate("auth_nav")
                         Toast.makeText(
                             context,
                             "User Signed out",
@@ -231,19 +277,10 @@ fun TripzyNavHost(
             composable(route = AskLoginDestination.route) {
                 val viewModel: LoginViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsStateWithLifecycle()
-
-//                LaunchedEffect(key1 = Unit) {
-//                    if (googleAuthUiClient.getSignedInUser() != null) {
-//                        println(googleAuthUiClient.getSignedInUser())
-//                        Log.d("Google","Reaching google ${googleAuthUiClient.getSignedInUser()?.username}")
-//                        Toast.makeText(
-//                            context,
-//                            "Already Signed In",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-//                        navController.navigate(HomeDestination.route)
-//                    }
-//                }
+                val currentUserStatus = viewModel.currentUserStatus.collectAsState(initial = null)
+                var isGoogleSigned by remember {
+                    mutableStateOf(false)
+                }
                 LaunchedEffect(key1 = state.isSignInSuccessful) {
                     if (state.isSignInSuccessful) {
                         Toast.makeText(
@@ -251,10 +288,28 @@ fun TripzyNavHost(
                             "Sign in successful",
                             Toast.LENGTH_LONG
                         ).show()
-                        navController.navigate(HomeDestination.route)
                         viewModel.resetState()
+                        viewModel.getUserDetails()
+                        isGoogleSigned = true
                     }
                 }
+
+                LaunchedEffect(currentUserStatus.value?.isSuccess) {
+                    if (currentUserStatus.value?.isSuccess != null && isGoogleSigned) {
+                        navController.navigate(HomeDestination.route)
+                        Log.d("USER", currentUserStatus.value!!.isSuccess.toString())
+                    }
+                }
+
+                LaunchedEffect(currentUserStatus.value?.isError) {
+                    if (currentUserStatus.value?.isError != null && isGoogleSigned ) {
+                        val currentUser = googleAuthUiClient.getSignedInUser()
+                        if (currentUser != null) {
+                            navController.navigate(AskDetailDestination.route)
+                        }
+                    }
+                }
+
 
                 val launcher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartIntentSenderForResult(),

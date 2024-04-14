@@ -1,5 +1,11 @@
 package com.qadri.tripzy.presentation.auth
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -24,6 +30,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 
@@ -43,6 +50,10 @@ class RegisterViewModel @Inject constructor(
 
     private val _isEmailVerified = MutableStateFlow(false)
     val isEmailVerified = _isEmailVerified.asStateFlow()
+
+
+    private val _updateDetailStatus = Channel<LoginStatus>()
+    val updateDetailsStatus = _updateDetailStatus.receiveAsFlow()
 
     fun sendConfirmationEmail() = viewModelScope.launch {
         repository.confirmUser().collect { result ->
@@ -87,22 +98,6 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    fun saveUser(name: String, latitude: Double, longitude: Double) = viewModelScope.launch {
-        repository.addUserDetail(name, latitude, longitude).collect{ result ->
-            when(result) {
-                is Resource.Error -> {
-                    _saveUserState.send(SaveUserDetail(isError = result.message))
-                }
-                is Resource.Loading -> {
-                    _saveUserState.send(SaveUserDetail(isLoading = true))
-                }
-                is Resource.Success -> {
-                    _saveUserState.send(SaveUserDetail(isSuccess = "Details updated"))
-                }
-            }
-        }
-    }
-
     private val _registerState = MutableStateFlow(RegisterDetails())
     val registerState = _registerState.asStateFlow()
 
@@ -110,28 +105,51 @@ class RegisterViewModel @Inject constructor(
         _registerState.value = registerDetails
     }
 
-    fun addUserDetail(name: String, latitude: Double, longitude: Double) {
-        repository.addUserDetail(name, latitude, longitude)
-    }
-
-    private var _registerResponse = MutableStateFlow(RegisterResponse())
-    val registerResponse = _registerResponse.asStateFlow()
-
-    private val _searchAutoComplete = MutableStateFlow<ApiResult<LocationResult>>(ApiResult.Loading())
-    val searchAutoComplete = _searchAutoComplete.asStateFlow()
-
-
-    fun fetchSearchAutoComplete(location: String) {
-        viewModelScope.launch {
-            repository.getSearchAutoComplete(string = location)
-                .flowOn(Dispatchers.Default)
-                .catch {
-                    _searchAutoComplete.value = ApiResult.Error(it.message ?: "Something went wrong")
-                }
-                .collect{
-                    _searchAutoComplete.value = it
+    suspend fun addUserDetail(name: String, address: String, image: ByteArray) {
+        repository.addUserDetail(name, address, image).collect {
+            when (it) {
+                is Resource.Error -> {
+                    _updateDetailStatus.send(LoginStatus(isError = it.message))
                 }
 
+                is Resource.Loading -> {
+                    _updateDetailStatus.send(LoginStatus(isLoading = true))
+
+                }
+
+                is Resource.Success -> {
+                    _updateDetailStatus.send(LoginStatus(isSuccess = it.data))
+                }
+            }
         }
     }
 }
+
+
+fun handleImageCapture(bitmap: Bitmap): ByteArray {
+    return convertBitmapToByteArray(bitmap)
+}
+
+fun handleImageSelection(uri: Uri, context: Context): ByteArray {
+    val bitmap = if (Build.VERSION.SDK_INT < 28) {
+        MediaStore.Images
+            .Media
+            .getBitmap(context.contentResolver, uri)
+
+    } else {
+        val source = ImageDecoder
+            .createSource(context.contentResolver, uri)
+        ImageDecoder.decodeBitmap(source)
+    }
+    return convertBitmapToByteArray(bitmap)
+}
+fun convertBitmapToByteArray(bitmap: Bitmap): ByteArray {
+    val outputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    return outputStream.toByteArray()
+}
+data class LoginStatus(
+    val isLoading: Boolean = false,
+    val isSuccess: String? = null,
+    val isError: String? = null
+)

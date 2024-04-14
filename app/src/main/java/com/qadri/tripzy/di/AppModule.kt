@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.qadri.tripzy.data.DatabaseRepository
+import com.qadri.tripzy.data.DatabaseRepositoryImpl
 import com.qadri.tripzy.data.TripzyDao
 import com.qadri.tripzy.data.TripzyDatabase
 import com.qadri.tripzy.data.TripzyRepository
@@ -39,7 +42,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesFirebaseDatabase() = FirebaseDatabase.getInstance()
+    fun providesFirebaseFirestore() = FirebaseFirestore.getInstance()
 
     @OptIn(ExperimentalSerializationApi::class)
     @Singleton
@@ -74,8 +77,13 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideApiService(httpClient: HttpClient, dao: TripzyDao, firebaseAuth: FirebaseAuth, firebaseDatabase: FirebaseDatabase, @ApplicationContext context: Context): TripzyRepository =
-        TripzyRepositoryImpl(httpClient, dao, firebaseAuth, firebaseDatabase, context)
+    fun provideApiService(httpClient: HttpClient, dao: TripzyDao, firebaseAuth: FirebaseAuth, firebaseFirestore: FirebaseFirestore, @ApplicationContext context: Context): TripzyRepository =
+        TripzyRepositoryImpl(httpClient, dao, firebaseAuth, firebaseFirestore, context)
+
+    @Singleton
+    @Provides
+    fun providesDatabaseRepo(dao: TripzyDao): DatabaseRepository =
+        DatabaseRepositoryImpl(dao)
 
 
     @Provides
@@ -88,6 +96,8 @@ object AppModule {
             app,
             TripzyDatabase::class.java,
             "tripzy_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
 
 }

@@ -215,8 +215,8 @@ fun SearchScreen(
                             openAlertDialogItem = recent
                         }
                     )
-                    Headings(text = "Top Experiences")
-                    CardsRow()
+//                    Headings(text = "Top Experiences")
+//                    CardsRow()
                     CityCards()
                 }
             }

@@ -78,7 +78,6 @@ object LoginDestination : NavigationDestination {
     override val titleRes: Int = R.string.login
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
