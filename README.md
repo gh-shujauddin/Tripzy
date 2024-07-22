@@ -2,7 +2,7 @@
 
 # Tripzy: Smart travel app
 
-Tripzy is a Smart Travel Mobile Application that aims to provide details about the places to travel. 
+Tripzy is a Smart Travel Mobile Application that aims to provide details about the places to travel. User can plan new trip also where user will get curated list of places according to days which user can personalize.
 <br />
 
 Home | Search | Place Detail | Top trips
